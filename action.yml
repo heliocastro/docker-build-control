@@ -1,5 +1,4 @@
 # SPDX-FileCopyrightText: 2024 Helio Chissini de Castro <heliocastro@gmail.com>
-#
 # SPDX-License-Identifier: MIT
 
 name: "Docker Build Control"
@@ -16,6 +15,9 @@ inputs:
   name:
     description: "Image name"
     required: true
+  target:
+    description: "Target in the Dockerfile"
+    required: false
   version:
     description: "Image version"
     required: true
@@ -34,6 +36,11 @@ inputs:
   debug:
     description: "Debug check_image script"
     required: false
+
+outputs:
+  image_version:
+    description: "Generated image version"
+    value: ${{ steps.check_image.outputs.version }}
 
 runs:
   using: "composite"
@@ -93,12 +100,11 @@ runs:
           type=ref,event=tag
 
     - name: Build image
-      if: >
-        steps.check_image.outputs.result != 'found'
+      if: steps.check_image.outputs.result != 'found'
       uses: docker/build-push-action@v5
       with:
         context: .
-        target: ${{ inputs.name }}
+        target: ${{ inputs.target || inputs.name }}
         push: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
         load: false
         build-args: ${{ inputs.build-args }}
@@ -107,4 +113,3 @@ runs:
         labels: ${{ steps.meta.outputs.labels }}
         build-contexts: ${{ inputs.build-contexts }}
         secret-files: ${{ inputs.secret-files }}
-

@@ -48,13 +48,15 @@ log.debug(f"Repository: {repository}")
 
 # We base the version on the base_version and the unique_id
 version = f"{base_version}-sha.{unique_id[:8]}"
+status: str = "none"
 
 # In case of need invalidate the cache from images we just return the version
 if invalidate_cache:
     logging.debug("Image is set to be rebuild due invalidate option.")
     # Set GitHub Actions output
     with open(os.environ["GITHUB_OUTPUT"], "a") as file:
-        file.write(f"result={version}\n")
+        file.write(f"result={status}\n")
+        file.write(f"image_version={version}\n")
     sys.exit(0)
 
 headers: dict[str, str] = {
@@ -86,11 +88,13 @@ else:
         if sublist
         for item in sublist
     ]
+
     if version in versions:
-        version = "found"
+        status = "found"
 
     log.info(f"Version: {version}")
 
     # Set GitHub Actions output
     with open(os.environ["GITHUB_OUTPUT"], "a") as file:
-        file.write(f"result={version}\n")
+        file.write(f"result={status}\n")
+        file.write(f"image_version={version}\n")
