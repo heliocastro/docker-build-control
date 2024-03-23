@@ -18,6 +18,9 @@ inputs:
   target:
     description: "Target in the Dockerfile"
     required: false
+  labels:
+    description: "List of custom labels for docker image"
+    required: false
   version:
     description: "Image version"
     required: true
@@ -40,7 +43,7 @@ inputs:
 outputs:
   image_version:
     description: "Generated image version"
-    value: ${{ steps.check_image.outputs.version }}
+    value: ${{ steps.check_image.outputs.image_version }}
 
 runs:
   using: "composite"
@@ -91,13 +94,15 @@ runs:
       uses: docker/metadata-action@v5
       with:
         images: |
-          ${{ env.REGISTRY }}/${{ github.repository }}/${{ inputs.name }}
+          ${{ inputs.registry }}/${{ github.repository }}/${{ inputs.name }}
         tags: |
           type=schedule,pattern={{date 'YYYYMMDD'}}
           type=schedule,pattern=snapshot
+          type=semver,pattern={{version}}
           type=raw,value=${{ inputs.version }}
-          type=raw,value=${{ steps.check_image.outputs.result }}
+          type=raw,value=${{ steps.check_image.outputs.image_version }}
           type=ref,event=tag
+        labels: ${{ inputs.labels }}
 
     - name: Build image
       if: steps.check_image.outputs.result != 'found'
@@ -105,11 +110,12 @@ runs:
       with:
         context: .
         target: ${{ inputs.target || inputs.name }}
-        push: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
-        load: ${{ github.event_name == 'pull_request' }}
+        push: true
+        load: false
         build-args: ${{ inputs.build-args }}
         tags: |
           ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
         build-contexts: ${{ inputs.build-contexts }}
         secret-files: ${{ inputs.secret-files }}
+
