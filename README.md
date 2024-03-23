@@ -29,6 +29,15 @@ with:
     # Name of the image to be build
     description: "Image name"
     required: true
+  target:
+    description: "Target in the Dockerfile"
+    required: false
+  images:
+    description: "Custom image names"
+    required: false
+  labels:
+    description: "List of custom labels for docker image"
+    required: false
   version:
     # Version of the image to be build
     description: "Image version"

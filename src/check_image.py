@@ -17,12 +17,11 @@ from rich.logging import RichHandler
     given name and version exists.
 """
 
-FORMAT = "%(message)s"
 logging.basicConfig(
-    level="NOTSET", format=FORMAT, datefmt="[%X]", handlers=[RichHandler()]
+    level="INFO", format="%(message)s", datefmt="[%X]", handlers=[RichHandler()]
 )
 log = logging.getLogger("rich")
-if "ACTION_DEBUG" in os.environ:
+if "ACTION_DEBUG" in os.environ and os.environ["ACTION_DEBUG"] == "true":
     log.setLevel(logging.DEBUG)
 token = os.getenv("INPUT_TOKEN")
 github_repository = os.getenv("GITHUB_REPOSITORY")
