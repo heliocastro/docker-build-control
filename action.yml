@@ -106,7 +106,7 @@ runs:
         context: .
         target: ${{ inputs.target || inputs.name }}
         push: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
-        load: false
+        load: ${{ github.event_name == 'pull_request' }}
         build-args: ${{ inputs.build-args }}
         tags: |
           ${{ steps.meta.outputs.tags }}
