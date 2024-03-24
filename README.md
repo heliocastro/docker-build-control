@@ -57,6 +57,10 @@ with:
   secret-files:
     description: "Pass secrets as build info"
     required: false
+  platforms:
+    # Platforms to be built
+    description: "Enable multi platform builds. Supported linux/amd64(default) and linux/arm66, comma separated"
+    required: false
   debug:
     # Debug the image check script
     description: "Debug check_image script"
@@ -116,7 +120,7 @@ FROM base AS runtime
        - name: Checkout default branch
          uses: actions/checkout@v4
        - name: Build final image
-         uses: heliocastro/docker-build-control@v1
+         uses: heliocastro/docker-build-control@v4
          with:
           name: myimage
           token: ${{ secrets.GITHUB_TOKEN }}

@@ -39,6 +39,9 @@ inputs:
   secret-files:
     description: "Pass secrets as build info"
     required: false
+  platforms:
+    description: "Enable multi platform builds. Supported linux/amd64(default) and linux/arm66, comma separated"
+    required: false
   debug:
     description: "Debug check_image script"
     required: false
@@ -80,6 +83,10 @@ runs:
         pip install -q -U pip requests rich
         python ${{ github.workspace }}/docker-build-control/src/check_image.py
 
+    - name: Setup QEMU
+      if: steps.check_image.outputs.result != 'found' && ${{ inputs.platforms }}
+      uses: docker/setup-qemu-action@v3
+
     - name: Set up Docker build
       if: steps.check_image.outputs.result != 'found'
       uses: docker/setup-buildx-action@v3
@@ -113,6 +120,7 @@ runs:
       with:
         context: .
         target: ${{ inputs.target || inputs.name }}
+        platforms: ${{ inputs.platforms }}
         push: true
         load: false
         build-args: ${{ inputs.build-args }}
