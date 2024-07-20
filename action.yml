@@ -118,6 +118,8 @@ runs:
       if: steps.check_image.outputs.result != 'found'
       uses: docker/build-push-action@v5
       with:
+        driver-opts: |
+            image=moby/buildkit:v0.10.6
         context: .
         target: ${{ inputs.target || inputs.name }}
         platforms: ${{ inputs.platforms }}
