@@ -131,4 +131,6 @@ runs:
           ${{ steps.meta.outputs.labels }}
         build-contexts: ${{ inputs.build-contexts }}
         secret-files: ${{ inputs.secret-files }}
+        provenance: mode=max
+        sbom: true
 

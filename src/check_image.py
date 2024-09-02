@@ -12,6 +12,7 @@ from urllib.parse import quote
 
 import requests
 from rich.logging import RichHandler
+from rich.pretty import pprint
 
 """ Use current GitHub API to check if a container image with the
     given name and version exists.
@@ -44,6 +45,8 @@ owner, repository = github_repository.split("/")
 
 log.debug(f"Owner: {owner}")
 log.debug(f"Repository: {repository}")
+log.debug(f"Image: {name}")
+log.debug(f"Version: {base_version}")
 
 # We base the version on the base_version and the unique_id
 version = f"{base_version}-sha.{unique_id[:8]}"
@@ -87,6 +90,9 @@ else:
         if sublist
         for item in sublist
     ]
+
+    if log.level == logging.DEBUG:
+        pprint(versions)
 
     if version in versions:
         status = "found"
